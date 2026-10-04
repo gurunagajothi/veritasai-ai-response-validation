@@ -15,20 +15,17 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "autoprefixer": "^10.6.1",
     "better-sqlite3": "^12.11.1",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "lucide-react": "^1.52.0",
-    "next": "^14.2.15",
+    "next": "^14.2.35",
     "papaparse": "^5.7.0",
-    "postcss": "^8.5.28",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^3.10.1",
-    "tailwindcss": "^3.4.17"
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^9.6.0",
@@ -36,7 +33,14 @@
     "@types/node": "^26.6.4",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.3.0",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.17",
     "tsx": "^4.23.15",
     "typescript": "^5.7.2"
+  },
+  "overrides": {
+    "postcss": "^8.5.28",
+    "chokidar": "^4.0.3"
   }
 }
