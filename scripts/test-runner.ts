@@ -179,6 +179,13 @@ async function runTests() {
     assert(buffer.byteLength > 1000, `Expected PDF buffer > 1000 bytes, got ${buffer.byteLength}`);
   });
 
+  // 11. Health Verification
+  await test('Health Verification: SQLite connectivity probe returns healthy', () => {
+    const db = getDb();
+    const result = db.prepare('SELECT 1 as healthy').get() as { healthy: number };
+    assert.strictEqual(result.healthy, 1, 'Expected SQLite health probe to return 1');
+  });
+
   console.log('\n====================================================');
   console.log(`  Tests Completed: ${passed} Passed, ${failed} Failed`);
   console.log('====================================================');

@@ -37,13 +37,17 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Install runtime tools
+# Install runtime tools including curl for container health check
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlite3 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Prepare application & persistent data directories
 RUN mkdir -p /app/data && chown -R node:node /app
+
+# Declare persistent volume mount point for SQLite database and WAL files
+VOLUME ["/app/data"]
 
 # Copy production artifacts
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
@@ -56,5 +60,9 @@ COPY --from=builder --chown=node:node /app/src ./src
 USER node
 
 EXPOSE 3000
+
+# Container health monitoring
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
 
 CMD ["npm", "start"]
