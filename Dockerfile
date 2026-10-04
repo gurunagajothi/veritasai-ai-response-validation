@@ -7,19 +7,22 @@ FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Install native build tools required for better-sqlite3
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Configure APT to handle corporate proxies/Docker Desktop proxy safely
+RUN echo "Acquire::http::Pipeline-Depth 0;\nAcquire::http::No-Cache true;\nAcquire::BrokenProxy true;" > /etc/apt/apt.conf.d/99fix-bad-proxy && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends --fix-missing \
     python3 \
     make \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
+# Install dependencies (better-sqlite3@12.11.1 compiles/installs cleanly for Node 20)
 COPY package*.json ./
 RUN npm ci
 
 # Copy full application source
 COPY . .
+RUN mkdir -p /app/public
 
 # Run test suite during container build to verify zero regressions
 RUN npm test
@@ -38,7 +41,9 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Install runtime tools including curl for container health check
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN echo "Acquire::http::Pipeline-Depth 0;\nAcquire::http::No-Cache true;\nAcquire::BrokenProxy true;" > /etc/apt/apt.conf.d/99fix-bad-proxy && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends --fix-missing \
     sqlite3 \
     curl \
     && rm -rf /var/lib/apt/lists/*

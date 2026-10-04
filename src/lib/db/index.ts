@@ -2,22 +2,42 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const DB_DIR = path.join(process.cwd(), 'data');
-if (!fs.existsSync(DB_DIR)) {
-  fs.mkdirSync(DB_DIR, { recursive: true });
+function getDbPath(): string {
+  if (process.env.DATABASE_URL) {
+    const customDir = path.dirname(process.env.DATABASE_URL);
+    if (customDir && customDir !== '.' && !fs.existsSync(customDir)) {
+      fs.mkdirSync(customDir, { recursive: true });
+    }
+    return process.env.DATABASE_URL;
+  }
+  const dbDir = path.join(process.cwd(), 'data');
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+  return path.join(dbDir, 'quality_intelligence.db');
 }
-
-const DB_PATH = process.env.DATABASE_URL || path.join(DB_DIR, 'quality_intelligence.db');
 
 let dbInstance: Database.Database | null = null;
 
 export function getDb(): Database.Database {
   if (!dbInstance) {
-    dbInstance = new Database(DB_PATH);
+    const dbPath = getDbPath();
+    dbInstance = new Database(dbPath);
     dbInstance.pragma('journal_mode = WAL');
     initTables(dbInstance);
   }
   return dbInstance;
+}
+
+export function closeDb(): void {
+  if (dbInstance) {
+    try {
+      dbInstance.close();
+    } catch {
+      // ignore
+    }
+    dbInstance = null;
+  }
 }
 
 function initTables(db: Database.Database) {

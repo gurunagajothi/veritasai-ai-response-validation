@@ -7,9 +7,19 @@ import { detectHallucinations } from '../src/lib/agents/hallucinationAgent';
 import { evaluateCompleteness } from '../src/lib/agents/completenessJudge';
 import { evaluateVerdict, DEFAULT_WEIGHTS } from '../src/lib/agents/verdictAgent';
 import { retrieveRelevantChunks } from '../src/lib/rag/retriever';
-import { getDb } from '../src/lib/db';
+import path from 'path';
+import fs from 'fs';
+import { getDb, closeDb } from '../src/lib/db';
 import { generateSingleEvaluationPdf } from '../src/lib/pdf/generateReport';
 import { FullEvaluationRecord } from '../src/lib/agents/types';
+
+// Isolate test database from production /app/data
+const testDir = path.join(process.cwd(), 'data', 'test');
+if (!fs.existsSync(testDir)) {
+  fs.mkdirSync(testDir, { recursive: true });
+}
+const testDbPath = path.join(testDir, 'test_quality_intelligence.db');
+process.env.DATABASE_URL = testDbPath;
 
 async function runTests() {
   console.log('====================================================');
@@ -185,6 +195,20 @@ async function runTests() {
     const result = db.prepare('SELECT 1 as healthy').get() as { healthy: number };
     assert.strictEqual(result.healthy, 1, 'Expected SQLite health probe to return 1');
   });
+
+  // Ensure DB connection is closed cleanly before exit
+  closeDb();
+
+  // Clean up isolated test database artifacts
+  try {
+    if (fs.existsSync(testDbPath)) fs.unlinkSync(testDbPath);
+    const walFile = `${testDbPath}-wal`;
+    if (fs.existsSync(walFile)) fs.unlinkSync(walFile);
+    const shmFile = `${testDbPath}-shm`;
+    if (fs.existsSync(shmFile)) fs.unlinkSync(shmFile);
+  } catch {
+    // Ignore cleanup error on exit
+  }
 
   console.log('\n====================================================');
   console.log(`  Tests Completed: ${passed} Passed, ${failed} Failed`);
