@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js build output
+/.next/
+/out/
+
+# Production
+/build
+
+# Local Environment Variables
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# SQLite Database
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+data/*.db
+
+# OS / Editor
+.DS_Store
+*.pem
+.vscode/
+.idea/
+Thumbs.db
