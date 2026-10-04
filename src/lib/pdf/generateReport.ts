@@ -123,9 +123,10 @@ export function generateSingleEvaluationPdf(record: FullEvaluationRecord): jsPDF
       ['Reference Answer', record.referenceAnswer || 'None provided (Evaluated against RAG knowledge base)'],
     ],
     headStyles: { fillColor: primaryColor, textColor: 255 },
+    margin: { left: 14, right: 14 },
     columnStyles: {
       0: { cellWidth: 32, fontStyle: 'bold', textColor: darkColor },
-      1: { cellWidth: 146 },
+      1: { cellWidth: 'auto' },
     },
     styles: { fontSize: 8.5, cellPadding: 3 },
   });
@@ -149,12 +150,13 @@ export function generateSingleEvaluationPdf(record: FullEvaluationRecord): jsPDF
       ['Hallucination Agent', `${record.hallucinationScore}%`, `${record.hallucinationData?.hallucinationCount || 0} Flagged Claims`, record.hallucinationData?.reasoning || ''],
       ['Completeness Judge', `${record.completenessScore}%`, `${record.completenessData?.addressedAspects?.length || 0}/${record.completenessData?.totalRequirements || 0} Addressed`, record.completenessData?.reasoning || ''],
     ],
+    margin: { left: 14, right: 14 },
     headStyles: { fillColor: darkColor, textColor: 255 },
     columnStyles: {
-      0: { cellWidth: 35, fontStyle: 'bold' },
+      0: { cellWidth: 34, fontStyle: 'bold' },
       1: { cellWidth: 18, halign: 'center' },
-      2: { cellWidth: 32 },
-      3: { cellWidth: 97 },
+      2: { cellWidth: 30 },
+      3: { cellWidth: 'auto' },
     },
     styles: { fontSize: 8, cellPadding: 3 },
   });
@@ -185,15 +187,16 @@ export function generateSingleEvaluationPdf(record: FullEvaluationRecord): jsPDF
     autoTable(doc, {
       startY: y,
       theme: 'grid',
+      margin: { left: 14, right: 14 },
       head: [['ID', 'AI Proposition / Claim', 'Status', 'Severity', 'Evidence / Verification']],
       body: claimRows,
       headStyles: { fillColor: primaryColor, textColor: 255 },
       columnStyles: {
         0: { cellWidth: 10, halign: 'center' },
-        1: { cellWidth: 62 },
+        1: { cellWidth: 58 },
         2: { cellWidth: 24, fontStyle: 'bold' },
         3: { cellWidth: 20 },
-        4: { cellWidth: 66 },
+        4: { cellWidth: 'auto' },
       },
       styles: { fontSize: 7.5, cellPadding: 2.5 },
     });
@@ -325,6 +328,7 @@ export function generateBatchEvaluationPdf(batch: BatchSummaryData): jsPDF {
   autoTable(doc, {
     startY: y,
     theme: 'grid',
+    margin: { left: 14, right: 14 },
     head: [['Evaluation Dimension', 'Average Score', 'Benchmark Target', 'Batch Health Status']],
     body: [
       ['Relevance', `${batch.avgRelevance.toFixed(1)}%`, '>= 80%', batch.avgRelevance >= 80 ? 'Healthy' : 'Needs Optimization'],
@@ -364,13 +368,14 @@ export function generateBatchEvaluationPdf(batch: BatchSummaryData): jsPDF {
     autoTable(doc, {
       startY: y,
       theme: 'striped',
+      margin: { left: 14, right: 14 },
       head: [['#', 'Prompt / Question', 'Score', 'Verdict', 'Accuracy', 'Hal. Safety']],
       body: rows,
       headStyles: { fillColor: darkColor, textColor: 255 },
       columnStyles: {
         0: { cellWidth: 10, halign: 'center' },
-        1: { cellWidth: 80 },
-        2: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
         3: { cellWidth: 32, fontStyle: 'bold' },
         4: { cellWidth: 20, halign: 'center' },
         5: { cellWidth: 20, halign: 'center' },
